@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 4: Complete Storyboard Development & Character Consistency</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation-container {
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            height: 100vh;
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #ffe066;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .slide p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .slide ul {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: left;
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .slide li:before {
+            content: "📝";
+            position: absolute;
+            left: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .slide-dot {
+            width: 40px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide-dot:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .slide-dot.active {
+            background: rgba(78,205,196,0.4);
+            border-color: rgba(78,205,196,0.6);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .time-indicator {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .morning-box {
+            background: rgba(78,205,196,0.1);
+            border: 2px solid rgba(78,205,196,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .afternoon-box {
+            background: linear-gradient(45deg, rgba(255,224,102,0.1), rgba(255,193,7,0.1));
+            border: 2px solid rgba(255,224,102,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .activity-box {
+            background: linear-gradient(45deg, rgba(255,107,107,0.1), rgba(255,64,129,0.1));
+            border: 2px solid rgba(255,107,107,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            animation: fadeInUp 1s ease-out 1.4s both;
+        }
+
+        .workshop-title {
+            background: linear-gradient(45deg, #4ecdc4, #ffe066);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #ffe066);
+            transition: width 0.5s ease;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+        }
+
+        .timeline-arrow {
+            color: #4ecdc4;
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            animation: fadeInUp 1s ease-out 1.6s both;
+            max-width: 1200px;
+        }
+
+        .platform-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .platform-card.best {
+            border-left-color: #4caf50;
+        }
+
+        .platform-card.good {
+            border-left-color: #ff9800;
+        }
+
+        .platform-card.alternative {
+            border-left-color: #2196f3;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .demo-code {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            text-align: left;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .storyboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+            max-width: 900px;
+        }
+
+        .storyboard-panel {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .technique-comparison {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 20px 0;
+            max-width: 1000px;
+        }
+
+        .technique-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(78,205,196,0.3);
+        }
+
+        .youtube-embed {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,107,107,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .youtube-link {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            border: 2px solid #ff6b6b;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .youtube-link:hover {
+            background: rgba(255,107,107,0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 22</div>
+    <div class="time-indicator" id="timeIndicator">9:00 AM</div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Welcome -->
+        <div class="slide active">
+            <h1>Day 4: The Professional Challenge</h1>
+            <h1 class="workshop-title">Complete Storyboard & Character Consistency</h1>
+            <p>From Scene Creation to Production-Ready Plans</p>
+            <div class="morning-box">
+                <h3>🎯 Today's Mission</h3>
+                <p>Develop complete, production-ready storyboards with consistent characters like Anansi throughout multiple scenes!</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Your Progress So Far -->
+        <div class="slide">
+            <h2>Your Creative Journey This Week</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Day 1 ✅</h3>
+                    <p><strong>Vision</strong><br>Cultural concept development</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Day 2 ✅</h3>
+                    <p><strong>Assets</strong><br>Generative art creation</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Day 3 ✅</h3>
+                    <p><strong>First Scene</strong><br>Video generation started</p>
+                </div>
+                <div class="timeline-arrow">→</div>
+                <div class="timeline-item">
+                    <h3>Day 4 🎯</h3>
+                    <p><strong>Complete Plan</strong><br>Full storyboard ready</p>
+                </div>
+            </div>
+            <div class="morning-box">
+                <p><strong>Goal:</strong> Leave today with a bulletproof plan for your cultural video series!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Character Consistency Challenge -->
+        <div class="slide">
+            <h2>The Character Consistency Challenge</h2>
+            <div class="activity-box">
+                <h3>🕷️ The Anansi Example</h3>
+                <p>Your Anansi spider needs to look like the SAME character across 5+ scenes while tricking the monkeys to leave St. Kitts!</p>
+                <ul>
+                    <li><strong>Scene 1:</strong> Anansi introduces himself to the monkeys</li>
+                    <li><strong>Scene 2:</strong> Anansi tricks them with a false promise</li>
+                    <li><strong>Scene 3:</strong> Monkeys start following his plan</li>
+                    <li><strong>Scene 4:</strong> The truth is revealed</li>
+                    <li><strong>Scene 5:</strong> Monkeys leave, Anansi succeeds</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <p><strong>Problem:</strong> AI generates different-looking characters each time!</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Why Character Consistency Matters -->
+        <div class="slide">
+            <h2>Why Character Consistency Matters</h2>
+            <div class="platform-grid">
+                <div class="platform-card best">
+                    <h3>🧠 Audience Connection</h3>
+                    <p>Viewers bond with consistent characters, making stories more engaging</p>
+                </div>
+                <div class="platform-card best">
+                    <h3>📖 Story Clarity</h3>
+                    <p>Consistent characters help audiences follow plot developments</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🎬 Professional Quality</h3>
+                    <p>Consistency separates amateur from professional video content</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🎭 Cultural Authenticity</h3>
+                    <p>Accurate character representation honors cultural traditions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Character Consistency Solutions -->
+        <div class="slide">
+            <h2>Best Tools for Character Consistency</h2>
+            <div class="platform-grid">
+                <div class="platform-card best">
+                    <h3>🥇 Leonardo AI</h3>
+                    <p><strong>Character Reference Feature</strong><br>Upload 1 image → Generate consistent scenes<br>Best for: Detailed character control</p>
+                </div>
+                <div class="platform-card best">
+                    <h3>🥈 Pollo AI</h3>
+                    <p><strong>Consistent Character Video</strong><br>Upload multiple angles → Seamless videos<br>Best for: Video-first workflow</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🥉 Runway ML + Reference</h3>
+                    <p><strong>Image-to-Video Workflow</strong><br>Generate consistent images first → Animate<br>Best for: High-quality results</p>
+                </div>
+                <div class="platform-card alternative">
+                    <h3>📐 "Crop Duster" Method</h3>
+                    <p><strong>Manual but Reliable</strong><br>Generate wide shots → Crop to different angles<br>Best for: Complete control</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Professional Technique Deep Dive -->
+        <div class="slide">
+            <h2>Professional Techniques: The "Crop Duster" vs "Zoomer"</h2>
+            <div class="technique-comparison">
+                <div class="technique-card">
+                    <h3>🎬 The "Crop Duster" Method</h3>
+                    <ul>
+                        <li><strong>Step 1:</strong> Generate ONE perfect wide shot</li>
+                        <li><strong>Step 2:</strong> Crop to medium, close-up, extreme close-up</li>
+                        <li><strong>Step 3:</strong> Animate each cropped version</li>
+                        <li><strong>Step 4:</strong> Edit together for film coverage</li>
+                    </ul>
+                    <p><strong>Pro:</strong> Guaranteed consistency<br><strong>Con:</strong> Manual work required</p>
+                </div>
+                <div class="technique-card">
+                    <h3>🔍 The "Zoomer" Method</h3>
+                    <ul>
+                        <li><strong>Step 1:</strong> Generate close-up shot in Midjourney</li>
+                        <li><strong>Step 2:</strong> Use "Zoom Out" to create wider versions</li>
+                        <li><strong>Step 3:</strong> Animate each zoom level</li>
+                        <li><strong>Step 4:</strong> Professional film coverage achieved</li>
+                    </ul>
+                    <p><strong>Pro:</strong> Fast AI-powered workflow<br><strong>Con:</strong> Less control over background</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: YouTube Tutorial Reference -->
+        <div class="slide">
+            <h2>Professional Tutorial: Gabe Michael</h2>
+            <div class="youtube-embed">
+                <h3>🎥 Master Class: "AI Filmmaking Character Consistency"</h3>
+                <p>Award-winning AI filmmaker Gabe Michael demonstrates both "Crop Duster" and "Zoomer" methods for maintaining character consistency across scenes.</p>
+                <a href="https://gabemichael.ai/ai-filmmaking-2-easy-methods-for-character-consistency-and-coverage/" target="_blank" class="youtube-link">
+                    Watch Full Tutorial →
+                </a>
+                <p><strong>What You'll Learn:</strong></p>
+                <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                    <li>Professional film coverage techniques with AI</li>
+                    <li>Character consistency across multiple shots</li>
+                    <li>Workflow optimization for video projects</li>
+                    <li>Real examples from award-winning AI films</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Hands-On: Character Sheet Creation -->
+        <div class="slide">
+            <h2>Hands-On: Create Your Character Sheet</h2>
+            <div class="activity-box">
+                <h3>📋 Character Reference Workshop (45 minutes)</h3>
+                <p><strong>Step 1: Define Your Character</strong></p>
+                <div class="demo-code">
+Anansi Character Sheet Prompt:
+"Character sheet of Anansi the trickster spider, West African folklore character, 
+anthropomorphic spider with human-like intelligence, crafty expression, traditional 
+cultural colors, multiple views: front, side, back, detailed features for animation, 
+cartoon style suitable for children's storytelling"
+                </div>
+                <ul>
+                    <li><strong>Physical traits:</strong> Size, colors, distinctive features</li>
+                    <li><strong>Clothing/accessories:</strong> Cultural elements, props</li>
+                    <li><strong>Expressions:</strong> Happy, sneaky, surprised, victorious</li>
+                    <li><strong>Poses:</strong> Standing, gesturing, interacting</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Character Prompting Best Practices -->
+        <div class="slide">
+            <h2>Character Prompting Best Practices</h2>
+            <div class="morning-box">
+                <h3>🎯 Consistency Prompting Formula</h3>
+                <div class="demo-code">
+[Character Name] + [Key Physical Features] + [Action/Scene] + [Style] + [Mood/Lighting]
+
+Example:
+"Anansi the spider, eight legs, brown and gold coloring, traditional West African 
+patterns, standing confidently in tropical forest, speaking to curious vervet monkeys, 
+animated storytelling style, warm golden hour lighting, children's book illustration"
+                </div>
+            </div>
+            <div class="afternoon-box">
+                <h3>💡 Pro Tips for Better Results</h3>
+                <ul>
+                    <li><strong>Use the same opening:</strong> Always start with character name and key features</li>
+                    <li><strong>Include reference numbers:</strong> "Character sheet reference #1" in prompts</li>
+                    <li><strong>Consistent style tags:</strong> Keep art style terms identical</li>
+                    <li><strong>Cultural accuracy:</strong> Research authentic visual elements</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Break Time -->
+        <div class="slide">
+            <h2>☕ Break Time!</h2>
+            <div class="activity-box">
+                <h3>15 Minutes to Recharge</h3>
+                <p>Review your character sheets and chat with classmates about consistency challenges</p>
+            </div>
+            <p><strong>When we return:</strong> Complete storyboard development workshop</p>
+        </div>
+
+        <!-- Slide 11: Complete Storyboard Structure -->
+        <div class="slide">
+            <h2>Complete Storyboard Structure</h2>
+            <div class="storyboard-grid">
+                <div class="storyboard-panel">
+                    <strong>Scene 1: Setup</strong><br>
+                    Introduce characters and setting
+                </div>
+                <div class="storyboard-panel">
+                    <strong>Scene 2: Hook</strong><br>
+                    Present the conflict or challenge
+                </div>
+                <div class="storyboard-panel">
+                    <strong>Scene 3: Development</strong><br>
+                    Show character actions and reactions
+                </div>
+                <div class="storyboard-panel">
+                    <strong>Scene 4: Climax</strong><br>
+                    Highest tension or turning point
+                </div>
+                <div class="storyboard-panel">
+                    <strong>Scene 5: Resolution</strong><br>
+                    Conclude story and show results
+                </div>
+                <div class="storyboard-panel">
+                    <strong>Scene 6: Cultural Message</strong><br>
+                    Reinforce heritage connection
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Storyboard Template Creation -->
+        <div class="slide">
+            <h2>Your Cultural Storyboard Template</h2>
+            <div class="activity-box">
+                <h3>📝 Storyboard Planning Workshop (60 minutes)</h3>
+                <p><strong>Create detailed plans for each scene:</strong></p>
+                <ul>
+                    <li><strong>Scene Description:</strong> What happens in this scene?</li>
+                    <li><strong>Character Actions:</strong> What does each character do?</li>
+                    <li><strong>Camera Angle:</strong> Wide shot, medium, close-up?</li>
+                    <li><strong>AI Prompt:</strong> Exact text for video generation</li>
+                    <li><strong>Cultural Elements:</strong> How does this celebrate heritage?</li>
+                    <li><strong>Consistency Notes:</strong> How to maintain character appearance</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <p><strong>Deliverable:</strong> Complete 6-scene storyboard with all prompts ready</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: AI Prompt Enhancement -->
+        <div class="slide">
+            <h2>AI-Assisted Prompt Enhancement</h2>
+            <div class="afternoon-box">
+                <h3>🤖 Using ChatGPT to Improve Your Prompts</h3>
+                <div class="demo-code">
+ChatGPT Enhancement Prompt:
+"I'm creating a video series about [your cultural story]. Here's my basic prompt for 
+scene [X]: [your prompt]. Please enhance this prompt to:
+1. Improve visual detail and clarity
+2. Add cinematic camera descriptions
+3. Include appropriate cultural elements
+4. Ensure character consistency
+5. Add mood and lighting details
+Make it professional-quality for AI video generation."
+                </div>
+            </div>
+            <div class="activity-box">
+                <h3>✨ Prompt Enhancement Activity (30 minutes)</h3>
+                <p>Use AI to refine and improve each of your 6 scene prompts</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Lunch Break -->
+        <div class="slide">
+            <h2>🍽️ Lunch Break</h2>
+            <div class="activity-box">
+                <h3>1 Hour to Recharge</h3>
+                <p>Enjoy your meal and review your enhanced storyboard prompts</p>
+            </div>
+            <p><strong>When we return:</strong> Technical implementation and testing</p>
+        </div>
+
+        <!-- Slide 15: Afternoon: Technical Implementation -->
+        <div class="slide">
+            <h2>Afternoon: Technical Implementation</h2>
+            <div class="workshop-title">From Storyboard to Production</div>
+            <div class="afternoon-box">
+                <h3>🔧 This Afternoon's Goals</h3>
+                <ul>
+                    <li><strong>Platform Testing:</strong> Find the best tools for your project</li>
+                    <li><strong>Workflow Optimization:</strong> Streamline your production process</li>
+                    <li><strong>Problem Solving:</strong> Address character consistency challenges</li>
+                    <li><strong>Timeline Planning:</strong> Realistic production schedule</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 16: Platform Testing Workshop -->
+        <div class="slide">
+            <h2>Platform Testing Workshop</h2>
+            <div class="activity-box">
+                <h3>🧪 Consistency Testing Lab (45 minutes)</h3>
+                <p><strong>Test your first 2 scenes across 3 platforms:</strong></p>
+                <ul>
+                    <li><strong>Leonardo AI:</strong> Use Character Reference feature</li>
+                    <li><strong>Runway ML:</strong> Image-to-video with reference images</li>
+                    <li><strong>Pollo AI:</strong> Consistent character video generator</li>
+                </ul>
+                <p><strong>Compare results:</strong> Which platform maintains your character best?</p>
+            </div>
+            <div class="morning-box">
+                <p><strong>Document:</strong> Platform strengths, weaknesses, and your preferred workflow</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: Troubleshooting Common Issues -->
+        <div class="slide">
+            <h2>Troubleshooting Common Issues</h2>
+            <div class="platform-grid">
+                <div class="platform-card best">
+                    <h3>🎭 Character Changes Face</h3>
+                    <p><strong>Solution:</strong> Use more specific facial feature descriptions, try Leonardo's Character Reference</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🎨 Style Inconsistency</h3>
+                    <p><strong>Solution:</strong> Keep exact same style keywords, use reference images, maintain consistent aspect ratios</p>
+                </div>
+                <div class="platform-card alternative">
+                    <h3>🔄 Background Changes</h3>
+                    <p><strong>Solution:</strong> Use "Crop Duster" method, generate backgrounds separately, composite manually</p>
+                </div>
+                <div class="platform-card alternative">
+                    <h3>⚡ Motion Issues</h3>
+                    <p><strong>Solution:</strong> Use motion brush selectively, start with subtle movements, avoid complex actions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Advanced Workflow Design -->
+        <div class="slide">
+            <h2>Design Your Production Workflow</h2>
+            <div class="activity-box">
+                <h3>🎬 Production Pipeline Workshop (30 minutes)</h3>
+                <p><strong>Create your personal production pipeline:</strong></p>
+                <ul>
+                    <li><strong>Pre-production:</strong> Character sheets, storyboard, prompt library</li>
+                    <li><strong>Production:</strong> Platform choice, generation order, file naming</li>
+                    <li><strong>Post-production:</strong> Editing software, transition planning, final export</li>
+                    <li><strong>Quality Control:</strong> Consistency checks, revision process</li>
+                </ul>
+            </div>
+            <div class="demo-code">
+Example Workflow:
+1. Generate Anansi character sheet (Leonardo AI)
+2. Create Scene 1 wide shot (Leonardo AI + Character Reference)
+3. Crop to medium and close-up shots (Photoshop/Canva)
+4. Animate each shot (Runway ML Image-to-Video)
+5. Repeat for all 6 scenes
+6. Edit together (CapCut/DaVinci Resolve)
+            </div>
+        </div>
+
+        <!-- Slide 19: Coding Integration -->
+        <div class="slide">
+            <h2>Simple Python Automation</h2>
+            <div class="morning-box">
+                <h3>💻 Automate Your File Organization</h3>
+                <div class="demo-code">
+# Simple Python script to organize your video project files
+import os
+import shutil
+
+def organize_video_project():
+    # Create project folders
+    folders = [
+        "01_Character_Sheets",
+        "02_Storyboard_Images", 
+        "03_Scene_Videos",
+        "04_Final_Exports",
+        "05_Backup_Files"
+    ]
+    
+    for folder in folders:
+        os.makedirs(folder, exist_ok=True)
+        print(f"Created folder: {folder}")
+    
+    print("Project structure ready!")
+
+# Run the organization
+organize_video_project()
+                </div>
+            </div>
+            <div class="afternoon-box">
+                <h3>🔧 Optional: Prompt Management System</h3>
+                <p>Create a simple Python script to store and manage your scene prompts</p>
+            </div>
+        </div>
+
+        <!-- Slide 20: Final Production Sprint -->
+        <div class="slide">
+            <h2>Final Production Sprint</h2>
+            <div class="activity-box">
+                <h3>🚀 Complete Storyboard Implementation (90 minutes)</h3>
+                <p><strong>Sprint Goals:</strong></p>
+                <ul>
+                    <li><strong>Generate all character references</strong> using your chosen platform</li>
+                    <li><strong>Create at least 3 complete scenes</strong> with consistent characters</li>
+                    <li><strong>Test your production workflow</strong> and refine as needed</li>
+                    <li><strong>Document any issues</strong> and solutions for Friday's work</li>
+                    <li><strong>Prepare presentation materials</strong> showing your progress</li>
+                </ul>
+            </div>
+            <div class="morning-box">
+                <p><strong>Success Metric:</strong> 3 scenes with consistent character appearance + complete plan for remaining scenes</p>
+            </div>
+        </div>
+
+        <!-- Slide 21: Project Presentations -->
+        <div class="slide">
+            <h2>Project Progress Presentations</h2>
+            <div class="activity-box">
+                <h3>🎤 Showcase Your Storyboard (45 minutes)</h3>
+                <p><strong>3 minutes per student:</strong></p>
+                <ul>
+                    <li><strong>Show your character sheet</strong> and consistency examples</li>
+                    <li><strong>Present your 6-scene storyboard</strong> with cultural context</li>
+                    <li><strong>Demonstrate 2-3 completed scenes</strong> with consistent characters</li>
+                    <li><strong>Share your biggest challenge</strong> and how you solved it</li>
+                    <li><strong>Get peer feedback</strong> and suggestions for Friday</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <p><strong>Peer Review Focus:</strong> Character consistency, cultural authenticity, technical quality</p>
+            </div>
+        </div>
+
+        <!-- Slide 22: Tomorrow's Final Day -->
+        <div class="slide">
+            <h2>Setting Up Friday's Success</h2>
+            <div class="morning-box">
+                <h3>🎯 Friday: Final Production & Showcase</h3>
+                <ul>
+                    <li><strong>Morning:</strong> Complete all remaining scenes using your tested workflow</li>
+                    <li><strong>Early Afternoon:</strong> Edit complete video stories together</li>
+                    <li><strong>Late Afternoon:</strong> Final showcase and cultural celebration</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <h3>📋 What You're Taking Forward</h3>
+                <ul>
+                    <li>Complete 6-scene storyboard with professional prompts</li>
+                    <li>Proven character consistency workflow</li>
+                    <li>3+ completed scenes demonstrating your process</li>
+                    <li>Technical solution to the consistency challenge</li>
+                    <li>Cultural story ready for final production</li>
+                </ul>
+            </div>
+            <div class="activity-box">
+                <p><strong>Tonight's Homework:</strong> Review the Gabe Michael tutorial and prepare any additional character references you might need!</p>
+            </div>
+        </div>
+
+        <!-- Slide 23: Reflection & Skills Gained -->
+        <div class="slide">
+            <h2>Skills Mastered Today</h2>
+            <div class="platform-grid">
+                <div class="platform-card best">
+                    <h3>🎭 Character Design</h3>
+                    <p>Created consistent, culturally authentic characters across multiple scenes</p>
+                </div>
+                <div class="platform-card best">
+                    <h3>📋 Storyboard Development</h3>
+                    <p>Professional 6-scene narrative structure with cultural storytelling</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🔧 Technical Problem-Solving</h3>
+                    <p>Mastered AI tool workflows for character consistency challenges</p>
+                </div>
+                <div class="platform-card good">
+                    <h3>🎬 Production Planning</h3>
+                    <p>Developed complete workflow from concept to final video</p>
+                </div>
+                <div class="platform-card alternative">
+                    <h3>💻 Automation Skills</h3>
+                    <p>Basic Python scripting for project organization</p>
+                </div>
+                <div class="platform-card alternative">
+                    <h3>🤖 AI Collaboration</h3>
+                    <p>Using ChatGPT to enhance and refine creative prompts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Day Complete -->
+        <div class="slide">
+            <h2>Day 4 Complete: Production-Ready!</h2>
+            <div class="workshop-title">Ready for Final Production</div>
+            <div class="morning-box">
+                <h3>🏆 What You've Accomplished</h3>
+                <ul>
+                    <li>Solved the character consistency challenge using professional techniques</li>
+                    <li>Created complete, detailed storyboards for cultural video series</li>
+                    <li>Developed and tested personal production workflows</li>
+                    <li>Generated consistent character assets and scene examples</li>
+                    <li>Built technical skills combining AI tools with traditional methods</li>
+                </ul>
+            </div>
+            <div class="afternoon-box">
+                <p><strong>Friday:</strong> Complete your cultural video masterpiece and share it with the world! Your Anansi story (and others) will celebrate Caribbean heritage through cutting-edge technology! 🕷️🎬✨</p>
+            </div>
+            <div class="youtube-embed">
+                <p><strong>Remember:</strong> Watch Gabe Michael's tutorial tonight for additional techniques!</p>
+                <a href="https://gabemichael.ai/ai-filmmaking-2-easy-methods-for-character-consistency-and-coverage/" target="_blank" class="youtube-link">
+                    Review Tutorial →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <div class="nav-controls">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+        <div class="slide-grid">
+            <div class="slide-dot active" onclick="goToSlide(0)" title="Welcome">1</div>
+            <div class="slide-dot" onclick="goToSlide(1)" title="Progress">2</div>
+            <div class="slide-dot" onclick="goToSlide(2)" title="Challenge">3</div>
+            <div class="slide-dot" onclick="goToSlide(3)" title="Why Consistency">4</div>
+            <div class="slide-dot" onclick="goToSlide(4)" title="Best Tools">5</div>
+            <div class="slide-dot" onclick="goToSlide(5)" title="Techniques">6</div>
+            <div class="slide-dot" onclick="goToSlide(6)" title="Tutorial">7</div>
+            <div class="slide-dot" onclick="goToSlide(7)" title="Character Sheet">8</div>
+            <div class="slide-dot" onclick="goToSlide(8)" title="Prompting">9</div>
+            <div class="slide-dot" onclick="goToSlide(9)" title="Break">10</div>
+            <div class="slide-dot" onclick="goToSlide(10)" title="Storyboard">11</div>
+            <div class="slide-dot" onclick="goToSlide(11)" title="Template">12</div>
+            <div class="slide-dot" onclick="goToSlide(12)" title="AI Enhancement">13</div>
+            <div class="slide-dot" onclick="goToSlide(13)" title="Lunch">14</div>
+            <div class="slide-dot" onclick="goToSlide(14)" title="Afternoon">15</div>
+            <div class="slide-dot" onclick="goToSlide(15)" title="Platform Testing">16</div>
+            <div class="slide-dot" onclick="goToSlide(16)" title="Troubleshooting">17</div>
+            <div class="slide-dot" onclick="goToSlide(17)" title="Workflow">18</div>
+            <div class="slide-dot" onclick="goToSlide(18)" title="Python">19</div>
+            <div class="slide-dot" onclick="goToSlide(19)" title="Sprint">20</div>
+            <div class="slide-dot" onclick="goToSlide(20)" title="Presentations">21</div>
+            <div class="slide-dot" onclick="goToSlide(21)" title="Tomorrow">22</div>
+            <div class="slide-dot" onclick="goToSlide(22)" title="Skills">23</div>
+            <div class="slide-dot" onclick="goToSlide(23)" title="Complete">24</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 24;
+
+        const timeSchedule = [
+            "9:00 AM", "9:10 AM", "9:20 AM", "9:30 AM", "9:45 AM", "10:00 AM", "10:15 AM", 
+            "10:30 AM", "10:45 AM", "11:00 AM", "11:15 AM", "11:30 AM", "12:00 PM", "12:15 PM",
+            "12:00 PM", "1:00 PM", "1:15 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", 
+            "3:45 PM", "4:15 PM", "4:30 PM"
+        ];
+
+        function updateSlideDisplay() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.slide-dot');
+            
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            document.getElementById('timeIndicator').textContent = timeSchedule[currentSlide] || "4:30 PM";
+            
+            const progressPercentage = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressFill').style.width = `${progressPercentage}%`;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                updateSlideDisplay();
+            }
+        }
+
+        function goToSlide(slideIndex) {
+            if (slideIndex >= 0 && slideIndex < totalSlides) {
+                currentSlide = slideIndex;
+                updateSlideDisplay();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            switch(event.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    changeSlide(-1);
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                    event.preventDefault();
+                    changeSlide(1);
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                changeSlide(1); // Swipe left - next slide
+            }
+            if (touchEndX > touchStartX + 50) {
+                changeSlide(-1); // Swipe right - previous slide
+            }
+        }
+
+        // Initialize
+        updateSlideDisplay();
+    </script>
+</body>
+</html>
